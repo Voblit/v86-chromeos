@@ -34,12 +34,16 @@ window.onload = function() {
         autostart: false
     });
 
+    let isoLoaded = false;
+    let hddLoaded = false;
+
     // Load ISO from USB
     document.getElementById("iso_input").onchange = function(e) {
         var file = e.target.files[0];
         var reader = new FileReader();
         reader.onload = function() {
             emulator.set_cdrom(new Uint8Array(reader.result));
+            isoLoaded = true;
             tryStart();
         };
         reader.readAsArrayBuffer(file);
@@ -51,19 +55,14 @@ window.onload = function() {
         var reader = new FileReader();
         reader.onload = function() {
             emulator.set_hda(new Uint8Array(reader.result));
+            hddLoaded = true;
             tryStart();
         };
         reader.readAsArrayBuffer(file);
     };
 
     // Start only when both ISO and HDD are loaded
-    let isoLoaded = false;
-    let hddLoaded = false;
-
     function tryStart() {
-        if (document.getElementById("iso_input").files.length > 0) isoLoaded = true;
-        if (document.getElementById("hdd_input").files.length > 0) hddLoaded = true;
-
         if (isoLoaded && hddLoaded) {
             emulator.run();
         }
