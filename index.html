@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>v86 - ChromeOS</title>
+<title>v86</title>
 
 <style>
     body {
@@ -69,7 +69,7 @@ window.onload = function() {
     let isoBuffer = null;
     let hddBuffer = null;
 
-    // Load ISO from USB
+    // Load ISO
     document.getElementById("iso_input").onchange = function(e) {
         const file = e.target.files[0];
         const reader = new FileReader();
@@ -80,7 +80,7 @@ window.onload = function() {
         reader.readAsArrayBuffer(file);
     };
 
-    // Load HDD from USB
+    // Load HDD
     document.getElementById("hdd_input").onchange = function(e) {
         const file = e.target.files[0];
         const reader = new FileReader();
@@ -91,36 +91,31 @@ window.onload = function() {
         reader.readAsArrayBuffer(file);
     };
 
-    // Enable power button only when both disks are loaded
     function checkReady() {
         if (isoBuffer && hddBuffer) {
             document.getElementById("powerBtn").disabled = false;
         }
     }
 
-    // Power button starts the VM
     document.getElementById("powerBtn").onclick = function() {
 
-        // Build disk config ONLY when both buffers exist
-        const diskConfig = {
-            hda: { buffer: hddBuffer },
-            cdrom: { buffer: isoBuffer }
+        // Build initial state
+        const state = {
+            disks: {
+                hda: { buffer: hddBuffer },
+                cdrom: { buffer: isoBuffer }
+            }
         };
 
         var emulator = new V86({
             wasm_path: "v86.wasm",
-
             memory_size: 512 * 1024 * 1024,
             vga_memory_size: 8 * 1024 * 1024,
-
             screen_container: document.getElementById("screen_container"),
-
             bios: { url: "seabios.bin" },
             vga_bios: { url: "vgabios.bin" },
 
-            // Insert disk config here
-            ...diskConfig,
-
+            initial_state: state,
             autostart: true
         });
 
