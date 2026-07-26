@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>v86</title>
+<title>v86 - ChromeOS</title>
 
 <style>
     body {
@@ -101,6 +101,12 @@ window.onload = function() {
     // Power button starts the VM
     document.getElementById("powerBtn").onclick = function() {
 
+        // Build disk config ONLY when both buffers exist
+        const diskConfig = {
+            hda: { buffer: hddBuffer },
+            cdrom: { buffer: isoBuffer }
+        };
+
         var emulator = new V86({
             wasm_path: "v86.wasm",
 
@@ -112,8 +118,8 @@ window.onload = function() {
             bios: { url: "seabios.bin" },
             vga_bios: { url: "vgabios.bin" },
 
-            hda: { buffer: hddBuffer },
-            cdrom: { buffer: isoBuffer },
+            // Insert disk config here
+            ...diskConfig,
 
             autostart: true
         });
