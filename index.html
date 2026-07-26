@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>v86 - ChromeOS</title>
+<title>v86</title>
 
 <style>
     body {
@@ -59,7 +59,7 @@
         image-rendering: crisp-edges;
     }
 
-    select, input {
+    select {
         background: #333;
         color: #eee;
         border: none;
@@ -152,9 +152,6 @@ window.onload = function() {
 
     document.getElementById("powerBtn").onclick = function() {
 
-        // Hard-coded relay IP
-        const relayURL = "relay.widgetry.org";
-
         emulator = new V86({
             wasm_path: "v86.wasm",
 
@@ -162,6 +159,7 @@ window.onload = function() {
             vga_memory_size: 8 * 1024 * 1024,
 
             screen_container: container,
+
             screen_resize: true,
             vga_scaling_mode: 1,
 
@@ -172,9 +170,7 @@ window.onload = function() {
             cdrom: isoBuffer,
 
             autostart: true,
-
-            network_relay_url: relayURL,
-            network_relay_allow: true,
+            network_relay_url: "wss://relay.widgetry.org/"
         });
 
         emulator.add_listener("screen-set-size", upscale);
