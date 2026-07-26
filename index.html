@@ -6,8 +6,10 @@
 </head>
 
 <body>
-<h3>Select your ISO from the USB:</h3>
-<input type="file" id="iso_input" accept=".iso,.img" />
+<h3>Load your ISO and HDD:</h3>
+
+ISO: <input type="file" id="iso_input" accept=".iso,.img"><br><br>
+HDD: <input type="file" id="hdd_input" accept=".img"><br><br>
 
 <div id="screen_container">
     <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
@@ -32,15 +34,40 @@ window.onload = function() {
         autostart: false
     });
 
+    // Load ISO from USB
     document.getElementById("iso_input").onchange = function(e) {
         var file = e.target.files[0];
         var reader = new FileReader();
         reader.onload = function() {
             emulator.set_cdrom(new Uint8Array(reader.result));
-            emulator.run();
+            tryStart();
         };
         reader.readAsArrayBuffer(file);
     };
+
+    // Load HDD from USB
+    document.getElementById("hdd_input").onchange = function(e) {
+        var file = e.target.files[0];
+        var reader = new FileReader();
+        reader.onload = function() {
+            emulator.set_hda(new Uint8Array(reader.result));
+            tryStart();
+        };
+        reader.readAsArrayBuffer(file);
+    };
+
+    // Start only when both ISO and HDD are loaded
+    let isoLoaded = false;
+    let hddLoaded = false;
+
+    function tryStart() {
+        if (document.getElementById("iso_input").files.length > 0) isoLoaded = true;
+        if (document.getElementById("hdd_input").files.length > 0) hddLoaded = true;
+
+        if (isoLoaded && hddLoaded) {
+            emulator.run();
+        }
+    }
 };
 </script>
 
