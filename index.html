@@ -3,13 +3,56 @@
 <head>
 <meta charset="utf-8">
 <title>v86 on ChromeOS</title>
+
+<style>
+    body {
+        margin: 0;
+        background: #111;
+        color: #eee;
+        font-family: sans-serif;
+    }
+    #screen_container {
+        width: 100vw;
+        height: 100vh;
+        overflow: hidden;
+        background: black;
+    }
+    canvas {
+        width: 100%;
+        height: 100%;
+        image-rendering: pixelated;
+    }
+    #controls {
+        padding: 10px;
+        background: #222;
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        z-index: 10;
+    }
+    #powerBtn {
+        padding: 10px 20px;
+        background: #4CAF50;
+        border: none;
+        color: white;
+        font-size: 16px;
+        cursor: pointer;
+    }
+    #powerBtn:disabled {
+        background: #555;
+        cursor: not-allowed;
+    }
+</style>
 </head>
 
 <body>
-<h3>Load your ISO and HDD:</h3>
 
-ISO: <input type="file" id="iso_input" accept=".iso,.img"><br><br>
-HDD: <input type="file" id="hdd_input" accept=".img"><br><br>
+<div id="controls">
+    ISO: <input type="file" id="iso_input" accept=".iso,.img">
+    HDD: <input type="file" id="hdd_input" accept=".img">
+    <button id="powerBtn" disabled>Power On</button>
+</div>
 
 <div id="screen_container">
     <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
@@ -39,34 +82,43 @@ window.onload = function() {
 
     // Load ISO from USB
     document.getElementById("iso_input").onchange = function(e) {
-        var file = e.target.files[0];
-        var reader = new FileReader();
+        const file = e.target.files[0];
+        const reader = new FileReader();
         reader.onload = function() {
-            emulator.set_cdrom(new Uint8Array(reader.result));
+            emulator.disk_images.cdr = {
+                buffer: new Uint8Array(reader.result)
+            };
             isoLoaded = true;
-            tryStart();
+            checkReady();
         };
         reader.readAsArrayBuffer(file);
     };
 
-    // Load HDD from USB
+    // Load HDD from USB (correct v86 API)
     document.getElementById("hdd_input").onchange = function(e) {
-        var file = e.target.files[0];
-        var reader = new FileReader();
+        const file = e.target.files[0];
+        const reader = new FileReader();
         reader.onload = function() {
-            emulator.set_hda(new Uint8Array(reader.result));
+            emulator.disk_images.hda = {
+                buffer: new Uint8Array(reader.result)
+            };
             hddLoaded = true;
-            tryStart();
+            checkReady();
         };
         reader.readAsArrayBuffer(file);
     };
 
-    // Start only when both ISO and HDD are loaded
-    function tryStart() {
+    // Enable power button only when both disks are loaded
+    function checkReady() {
         if (isoLoaded && hddLoaded) {
-            emulator.run();
+            document.getElementById("powerBtn").disabled = false;
         }
     }
+
+    // Power button starts the VM
+    document.getElementById("powerBtn").onclick = function() {
+        emulator.run();
+    };
 };
 </script>
 
