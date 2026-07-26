@@ -75,7 +75,6 @@
 <div id="controls">
     ISO: <input type="file" id="iso_input" accept=".iso,.img">
     HDD: <input type="file" id="hdd_input" accept=".img">
-    Relay: <input type="text" id="relay_input" placeholder="wss://input link here..." size="22">
     <button id="powerBtn" disabled>Power On</button>
     Scale:
     <select id="scaleSelect">
@@ -102,7 +101,6 @@ window.onload = function() {
     const canvas = document.querySelector("canvas");
     const container = document.getElementById("screen_container");
     const scaleSelect = document.getElementById("scaleSelect");
-    const relayInput = document.getElementById("relay_input");
 
     scaleSelect.onchange = function() {
         userScale = parseFloat(this.value);
@@ -154,7 +152,8 @@ window.onload = function() {
 
     document.getElementById("powerBtn").onclick = function() {
 
-        const relayURL = relayInput.value.trim();
+        // Hard-coded relay IP
+        const relayURL = "wss://107.170.233.148/";
 
         emulator = new V86({
             wasm_path: "v86.wasm",
