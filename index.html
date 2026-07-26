@@ -11,6 +11,7 @@
         color: #eee;
         font-family: sans-serif;
     }
+
     #controls {
         padding: 10px;
         background: #222;
@@ -20,6 +21,7 @@
         width: 100%;
         z-index: 10;
     }
+
     #powerBtn {
         padding: 10px 20px;
         background: #4CAF50;
@@ -28,10 +30,12 @@
         font-size: 16px;
         cursor: pointer;
     }
+
     #powerBtn:disabled {
         background: #555;
         cursor: not-allowed;
     }
+
     #screen_container {
         position: absolute;
         top: 50px;
@@ -39,11 +43,15 @@
         width: 100vw;
         height: calc(100vh - 50px);
         background: black;
+
+        display: flex;
+        justify-content: center;
+        align-items: center;
         overflow: hidden;
     }
+
     canvas {
-        width: 100%;
-        height: 100%;
+        display: block;
         image-rendering: pixelated;
         image-rendering: crisp-edges;
     }
@@ -109,8 +117,10 @@ window.onload = function() {
 
             screen_container: document.getElementById("screen_container"),
 
-            screen_resize: true,
-            vga_scaling_mode: 1,
+            vga: {
+                width: 800,
+                height: 600
+            },
 
             bios: { url: "seabios.bin" },
             vga_bios: { url: "vgabios.bin" },
@@ -124,8 +134,8 @@ window.onload = function() {
         window.addEventListener("resize", () => {
             if (emulator && emulator.screen_adapter) {
                 emulator.screen_adapter.set_size(
-                    window.innerWidth,
-                    window.innerHeight - 50
+                    800,
+                    600
                 );
             }
         });
