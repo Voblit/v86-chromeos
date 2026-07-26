@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>v86</title>
+<title>v86 - ChromeOS</title>
 
 <style>
     body {
@@ -67,7 +67,6 @@
 </div>
 
 <div id="screen_container">
-    <div style="white-space: pre; font: 14px monospace; line-height: 14px"></div>
     <canvas></canvas>
 </div>
 
@@ -78,6 +77,9 @@ window.onload = function() {
     let isoBuffer = null;
     let hddBuffer = null;
     let emulator = null;
+
+    const canvas = document.querySelector("canvas");
+    const container = document.getElementById("screen_container");
 
     // Load ISO
     document.getElementById("iso_input").onchange = function(e) {
@@ -107,6 +109,21 @@ window.onload = function() {
         }
     }
 
+    function upscale() {
+        if (!emulator || !emulator.screen_adapter) return;
+
+        const fbWidth  = emulator.screen_adapter.width;
+        const fbHeight = emulator.screen_adapter.height;
+
+        const contWidth  = container.clientWidth;
+        const contHeight = container.clientHeight;
+
+        const scale = Math.min(contWidth / fbWidth, contHeight / fbHeight);
+
+        canvas.style.width  = (fbWidth  * scale) + "px";
+        canvas.style.height = (fbHeight * scale) + "px";
+    }
+
     document.getElementById("powerBtn").onclick = function() {
 
         emulator = new V86({
@@ -115,12 +132,10 @@ window.onload = function() {
             memory_size: 512 * 1024 * 1024,
             vga_memory_size: 8 * 1024 * 1024,
 
-            screen_container: document.getElementById("screen_container"),
+            screen_container: container,
 
-            vga: {
-                width: 800,
-                height: 600
-            },
+            screen_resize: true,
+            vga_scaling_mode: 1,
 
             bios: { url: "seabios.bin" },
             vga_bios: { url: "vgabios.bin" },
@@ -131,14 +146,8 @@ window.onload = function() {
             autostart: true
         });
 
-        window.addEventListener("resize", () => {
-            if (emulator && emulator.screen_adapter) {
-                emulator.screen_adapter.set_size(
-                    800,
-                    600
-                );
-            }
-        });
+        emulator.add_listener("screen-set-size", upscale);
+        window.addEventListener("resize", upscale);
     };
 };
 </script>
