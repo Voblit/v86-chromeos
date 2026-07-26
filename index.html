@@ -2,7 +2,7 @@
 <html>
 <head>
 <meta charset="utf-8">
-<title>v86 - Chrome</title>
+<title>v86</title>
 
 <style>
     body {
@@ -99,23 +99,20 @@ window.onload = function() {
 
     document.getElementById("powerBtn").onclick = function() {
 
-        // Build initial state
-        const state = {
-            disks: {
-                hda: { buffer: hddBuffer },
-                cdrom: { buffer: isoBuffer }
-            }
-        };
-
         var emulator = new V86({
             wasm_path: "v86.wasm",
+
             memory_size: 512 * 1024 * 1024,
             vga_memory_size: 8 * 1024 * 1024,
+
             screen_container: document.getElementById("screen_container"),
+
             bios: { url: "seabios.bin" },
             vga_bios: { url: "vgabios.bin" },
 
-            initial_state: state,
+            hda: hddBuffer,
+            cdrom: isoBuffer,
+
             autostart: true
         });
 
