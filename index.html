@@ -170,7 +170,8 @@ window.onload = function() {
             cdrom: isoBuffer,
 
             autostart: true,
-            network_relay_url: "wss://relay.widgetry.org/"
+            network_relay_url: "wss://relay.widgetry.org/",
+             network_relay_allow: true,
         });
 
         emulator.add_listener("screen-set-size", upscale);
