@@ -166,12 +166,19 @@ window.onload = function() {
             bios: { url: "seabios.bin" },
             vga_bios: { url: "vgabios.bin" },
 
-            hda: hddBuffer,
-            cdrom: isoBuffer,
+            // FIXED: treat ISO as a real CD-ROM block device
+            cdrom: {
+                buffer: isoBuffer
+            },
+
+            // FIXED: treat HDD as a real block device
+            hda: {
+                buffer: hddBuffer
+            },
 
             autostart: true,
             network_relay_url: "wss://relay.widgetry.org/",
-             network_relay_allow: true,
+            network_relay_allow: true,
         });
 
         emulator.add_listener("screen-set-size", upscale);
